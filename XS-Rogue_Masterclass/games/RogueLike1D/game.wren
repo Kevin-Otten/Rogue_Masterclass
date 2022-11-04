@@ -70,7 +70,7 @@ class Game {
             }
         } else {
             if (__playerWon) {
-                System.print("YOU WON! :)")
+                System.print("YOU WON! :D")
             } else {
                 System.print("YOU DIED! :(")
             }
@@ -78,27 +78,42 @@ class Game {
     }
 
     static render() {
+        
+        var radius = 16
+        var spacing = (2 * radius) + (0.5 * radius)
+        var startPoint = -(__level.count * 0.5 * spacing)
 
+        for (i in 0...__level.count) {
+            if (__level[i] == 0) {
+                setRainbowColour()
+                Render.circle(startPoint + (i * spacing), 0, radius, 18)
+            } else if (__level[i] == "@") {
+                Render.setColor(0x00FF00FF)
+                Render.disk(startPoint + (i * spacing), 0, radius, 18)
+            } else if (__level[i] == "E") {
+                Render.setColor(0xff0000ff)
+                Render.disk(startPoint + (i * spacing), 0, radius, 18)
+            } else if (__level[i] == "*") {
+                Render.setColor(0x0000FFFF)
+                Render.disk(startPoint + (i * spacing), 0, radius, 18)
+            } else {
+                System.print(__level[i])
+            }
+        }
+
+        setRainbowColour()
+        if (__playerWon){
+            Render.shapeText("YOU WON! :D", -150, 100, 5)
+        }else if (__playerDied){
+            Render.shapeText("YOU LOST! :(", -150, 100, 5)
+        }
+    }
+
+    static setRainbowColour(){
         Render.setColor(
             (__time * 10 + 1).sin.abs,
             (__time * 10 + 2).sin.abs,
             (__time * 10 + 3).sin.abs)
-        
-
-        var radius = 6
-        var spacing = radius + radius * 0.5
-
-        for (i in 0...__level.count) {
-            if (__level[i] == 0) {
-                Render.circle(0, 10, radius, 18)
-            } else if (__level[i] == "@") {
-                
-            } else if (__level[i] == "E") {
-                
-            } else if (__level[i] == "*") {
-                
-            }
-        }
     }
 
     static move(right) {
@@ -219,7 +234,7 @@ class Game {
             
             //Check if the killed the player, move the enemy there nomather what and increment the itteration
             checkMovedTileEnemies(__enemyPositions[itteration])
-            __level[position] = "0"
+            __level[position] = 0
             __level[__enemyPositions[itteration]] = "E"
             itteration = itteration + 1
         }
