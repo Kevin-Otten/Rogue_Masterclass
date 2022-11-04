@@ -14,6 +14,12 @@ class Grid {
 
     [x,y] { _grid[y * _width + x] }
 
+    swap(fx, fy, tx, ty){
+        var tmp = this[tx, ty]
+        this[tx, ty] = this[fx, fy]
+        this[fx, fy] = tmp
+    }
+
     width { _width }
     height { _height}
 }
