@@ -1,44 +1,24 @@
-// This is just confirmation, remove this line as soon as you
-// start making your game
-System.print("Wren just got compiled to bytecode")
-
-// The xs module is 
 import "xs" for Render, Data, Input
-// WREN modules
 import "random" for Random
 
-// The game class it the entry point to your game
 class Game {
 
-    // The config method is called before the device, window, renderer
-    // and most other systems are created. You can use it to change the
-    // window title and size (for example).
-    // You can remove this method
     static config() {
         System.print("config")
         
-        // This can be saved to the system.json using the
-        // Data UI. This code overrides the values from the system.json
-        // and can be removed if there is no need for that
+        __width = 960
+        __height = 540
+
         Data.setString("Title", "Rogue Like Game", Data.system)
-        Data.setNumber("Width", 960, Data.system)
-        Data.setNumber("Height", 540, Data.system)
+        Data.setNumber("Width", __width, Data.system)
+        Data.setNumber("Height", __height, Data.system)
         Data.setNumber("Multiplier", 1, Data.system)
         Data.setBool("Fullscreen", false, Data.system)
         Data.setBool("Always on top", false, Data.system)
     }
 
-    // The init method is called when all system have been created.
-    // You can initialize you game specific data here.
     static init() {        
-        System.print("init")
-
-        // The "__" means that __time is a static variable (belongs to the class)
         __time = 0
-
-        // Variable that exists only in this function 
-        var image = Render.loadImage("[games]/shared/images/FMOD_White.png")
-        __sprite = Render.createSprite(image, 0, 0, 1, 1)
 
         //Level list
         var levelSize = 20
@@ -55,7 +35,6 @@ class Game {
         __playerEnd = levelSize - 1
         __playerWon = false
         __playerDied = false
-
 
         //RNG
         __numberGenerator = Random.new()
@@ -76,8 +55,6 @@ class Game {
         printLevel()
     }
 
-    // The update method is called once per tick.
-    // Gameplay code goes here.
     static update(dt) {
         __time = __time + dt
 
@@ -98,22 +75,30 @@ class Game {
                 System.print("YOU DIED! :(")
             }
         }
-        
-        System.print()
     }
 
-    // The render method is called once per tick, right after update.
     static render() {
+
         Render.setColor(
             (__time * 10 + 1).sin.abs,
             (__time * 10 + 2).sin.abs,
             (__time * 10 + 3).sin.abs)
-        Render.shapeText("xs", -100, 100, 20)
-        Render.shapeText("Made with love at Games@BUas", -100, -50, 1)
-        Render.setColor(0.5, 0.5, 0.5)
-        Render.shapeText("Time: %(__time)", -300, -160, 1)
+        
 
-        Render.sprite(__sprite, 180, -152, 0, 0.16, 0.0, 0xFFFFFFFF, 0x00000000, 0)
+        var radius = 6
+        var spacing = radius + radius * 0.5
+
+        for (i in 0...__level.count) {
+            if (__level[i] == 0) {
+                Render.circle(0, 10, radius, 18)
+            } else if (__level[i] == "@") {
+                
+            } else if (__level[i] == "E") {
+                
+            } else if (__level[i] == "*") {
+                
+            }
+        }
     }
 
     static move(right) {
@@ -134,7 +119,6 @@ class Game {
         //After checks updates the player position and then prints the level to the console
         __level[__playerPosition] = "@"
         updateEnemies()
-
         printLevel()
     }
 
@@ -152,17 +136,31 @@ class Game {
 
         if (__level[__playerPosition - 1] == "E") {
             __level[__playerPosition - 1] = 0
-            //System.print(__enemyPositions.remove(__playerPosition - 1))
+            removeEnemyByValue(__playerPosition - 1)
         }
 
         if (__level[__playerPosition + 1] == "E") {
             __level[__playerPosition + 1] = 0
-            //System.print(__enemyPositions.remove(__playerPosition + 1))
+            removeEnemyByValue(__playerPosition + 1)
         }
 
         //After attacking, process enemies turn and then update the level
         updateEnemies()
         printLevel()
+    }
+
+    static removeEnemyByValue(positionValue){
+
+        for (i in 0...__enemyPositions.count) {
+            if (__enemyPositions[i] == positionValue) {
+                removeEnemyByIndex(i)
+                return
+            }
+        }
+    }
+
+    static removeEnemyByIndex(index){
+        __enemyPositions.removeAt(index)
     }
 
     static setupEnemies() {
@@ -208,13 +206,13 @@ class Game {
             //Value between 0 and 1 (50/50 chance, theoretically)
             var value = __numberGenerator.int(2)
             if (value == 0) {
-                //if it wont walk of the level or on the exit
-                if (position > 0 && position - 1 != __playerEnd) {
+                //if it wont walk of the level, on the exit or another enemy
+                if (position > 0 && position - 1 != __playerEnd && __level[position - 1] != "E") {
                     __enemyPositions[itteration] = position - 1
                 }
             } else {
-                //if it wont walk of the level or on the exit
-                if (position < __level.count - 1 && position + 1 != __playerEnd) {
+                //if it wont walk of the level, on the exit or another enemy
+                if (position < __level.count - 1 && position + 1 != __playerEnd && __level[position + 1] != "E") {
                     __enemyPositions[itteration] = position + 1
                 }
             }
