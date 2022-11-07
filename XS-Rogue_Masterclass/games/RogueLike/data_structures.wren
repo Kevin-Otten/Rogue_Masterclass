@@ -1,15 +1,15 @@
-/// Logical representation of a (game) grid
+//This script contains custom data structures used by the game
+
 class Grid {
-    
-    construct new(width, height, zero) {
+    construct new(width, height, baseValue){
         _grid = []
         _width = width
         _height = height
-        _zero = zero
+        _zero = baseValue
+        _size = _width * _height
 
-        var n = _width * _height
-        for (i in 1..n) {
-            _grid.add(zero)
+        for (i in 1.._size) {
+            _grid.add(baseValue)
         }
     }
 
@@ -18,6 +18,9 @@ class Grid {
 
     /// The number of rows in the grid.
     height { _height }
+
+    /// The amount of values int the grid.
+    size { _size }
 
     /// Swaps the values of two given grid cells.
     swapValues(x1, y1, x2, y2) {
@@ -41,12 +44,12 @@ class Grid {
     [x, y] {
         return _grid[y * _width + x]
     }
-    
+
     /// Assigns a given value to a given grid cell.    
     [x, y]=(v) {
         _grid[y * _width + x] = v
-    }  
-    
+    }    
+
     /// Prints the contents of this grid to the console.
     print() {
         var line = "\n"
@@ -65,9 +68,7 @@ class Grid {
     }    
 }
 
-/// Logical representation of a grid with many empty spaces
-class SpraseGrid {
-
+class SparseGrid {
     construct new() {
         _grid = {}
     }
@@ -75,13 +76,13 @@ class SpraseGrid {
     static makeId(x, y) { x << 16 | y }
 
     has(x, y) {
-        var id =  SpraseGrid.makeId(x, y)
+        var id =  SparseGrid.makeId(x, y)
         return _grid.containsKey(id)
     }
 
     /// Returns the value stored at the given grid cell.    
     [x, y] {
-        var id =  SpraseGrid.makeId(x, y)
+        var id =  SparseGrid.makeId(x, y)
         if(_grid.containsKey(id)) {
             return _grid[id]
         } else {
@@ -92,7 +93,7 @@ class SpraseGrid {
 
     /// Assigns a given value to a given grid cell.    
     [x, y]=(v) {
-        var id = SpraseGrid.makeId(x, y)
+        var id = SparseGrid.makeId(x, y)
         _grid[id] = v
     }
 
@@ -106,18 +107,33 @@ class Queue {
 
     construct new() {
         _data = []
+        _size = 0
     }
 
     push(val) {
         _data.add(val)
+        _size = _size + 1
     }
 
     pop() {
         if(!empty()) {
             var val = _data[0]
             _data.removeAt(0)
+            _size = _size - 1
             return val
         }
+    }
+
+    front() {
+        return _data[0]
+    }
+
+    back() {
+        return _data[_size]
+    }
+
+    size() {
+        return _size
     }
 
     empty() { _data.count == 0 }
@@ -128,21 +144,34 @@ class Dequeue {
 
     construct new() {
         _data = []
+        _size = 0
     }
 
     push(val) {
         _data.add(val)
+        _size = _size + 1
     }
 
     pop() {
         if(!empty()) {
             var val = _data[_data.count - 1]
             _data.removeAt(_data.count - 1)
+            _size = _size - 1
             return val
         }
     }
 
+    front() {
+        return _data[0]
+    }
+
+    back() {
+        return _data[_size]
+    }
+
+    size() {
+        return _size
+    }
+
     empty() { _data.count == 0 }
  }
-
- 
