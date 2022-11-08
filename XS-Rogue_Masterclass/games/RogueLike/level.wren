@@ -1,6 +1,7 @@
-import "types" for Type
+import "types" for Type, Directions
 import "data_structures" for Grid
 import "xs" for Render
+import "xs_math" for Vec2
 import "game" for Game
 
 class Level {
@@ -8,11 +9,10 @@ class Level {
     static Initialize() {
 
         __tileSize = 16
-        __width = 10
-        __height = 10
-        __levelGrid = Grid.new(__width, __height, Type.floor)
+        __width = 21
+        __height = 21
+        __levelGrid = Grid.new(__width, __height, Type.wall)
 
-        
         var tilesImage = Render.loadImage("[game]/assets/tiles_dungeon.png")
         __emptySprite = Render.createGridSprite(tilesImage, 20, 24, 3, 0)
         __testFloorSprite = Render.createGridSprite(tilesImage, 20, 24, 2, 0)
@@ -58,10 +58,36 @@ class Level {
                 var positionY = startY + y * __tileSize
                 
                 if (tileType != Type.empty) {
-                    Render.sprite(__testFloorSprite, positionX, positionY)
+                    if (tileType == Type.wall) {
+                        var neighbourPos = Vec2.new(x, y)  
+                        var flag = 0
+                        for(i in 0...4) {
+                            var neighbour = neighbourPos + Directions[i]
+                            if(__levelGrid.valid(neighbour.x, neighbour.y) && __levelGrid[neighbour.x, neighbour.y] == Type.wall) {
+                                flag = flag | 1 << i  // |
+                            }
+                        }
+                        Render.sprite(__wallSprites[flag], positionX, positionY)
+                    } else {
+                        Render.sprite(__testFloorSprite, positionX, positionY)
+                    }
                 } else {
+                    Render.sprite(__emptySprite, positionX, positionY)
                 }
             }
         }
+    }
+
+    static width {__width}
+    static height {__height}
+    static levelGrid {__levelGrid}
+
+    static IsInBounds(x,y){
+        
+        var inBounds = true
+        if(x < 0 || x > __width - 1 || y < 0 || y > __height - 1){
+            inBounds = false
+        }
+        return inBounds
     }
 }

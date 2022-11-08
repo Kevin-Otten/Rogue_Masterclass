@@ -25,7 +25,7 @@ class Game {
         
         __time = 0        
         __state = generating // Skip loading
-        __alg = Randy
+        __alg = RandomWalk
         __genFiber =  Fiber.new { __alg.generate() }
     }   
     
