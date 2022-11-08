@@ -20,6 +20,8 @@ class WalkerGeneration {
             __direction = __randomNumber.int(0,4)
             walk()
         }
+
+        PostProcesser.RemoveExcessWalls()
     }
 
     static walk(){
@@ -61,7 +63,33 @@ class BSPGeneration {
 class PostProcesser {
     
     static RemoveExcessWalls(){
-        
+
+        var toRemove = []
+
+        for (x in 0...Level.width) {
+            for (y in 0...Level.height) {
+
+                var deleteThis = true
+
+                for (nx in x-1..x+1) {
+                    for (ny in y-1..y+1) {
+                        if(Level.levelGrid.valid(nx, ny)) {
+                            if(Level.levelGrid[nx, ny] != Type.wall) {
+                                deleteThis = false
+                            }
+                        }
+                    }
+                }
+
+                if(deleteThis) {
+                    toRemove.add(Vec2.new(x, y))
+                }
+            }
+        }
+
+        for (remove in toRemove) {
+            Level.levelGrid[remove.x, remove.y] = Type.empty
+        }
     }
 
     static RemoveLonelyWalls(){
