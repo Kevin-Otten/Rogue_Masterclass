@@ -17,7 +17,7 @@
     },
     "Perform second pass": {
         "type": "bool",
-        "value": false
+        "value": true
     },
     "Title": {
         "type": "string",

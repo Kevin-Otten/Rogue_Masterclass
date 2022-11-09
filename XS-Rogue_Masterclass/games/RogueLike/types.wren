@@ -1,4 +1,4 @@
-import "xs_math" for Vec2
+import "xs_math" for Vec2, Bits
 
 class Type {
     static empty    { 0 << 0 }
@@ -16,7 +16,7 @@ class Type {
     static light    { 1 << 11 }
 
 //    static attackable   { enemy }
-    static blocking     { (wall | enemy | door | player) }
+    static blocking     { (wall) }
 //    static character    { (player | enemy) }
 
     static monsterBlock { (wall | light | pot | chest) }

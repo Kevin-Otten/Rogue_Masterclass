@@ -12,10 +12,13 @@ class Level {
         __width = 21
         __height = 21
         __levelGrid = Grid.new(__width, __height, Type.wall)
+        __gameplayGrid = Grid.new(__width, __height, Type.empty)
 
         var tilesImage = Render.loadImage("[game]/assets/tiles_dungeon.png")
+        var heroImage = Render.loadImage("[game]/assets/chara_hero.png")
         __emptySprite = Render.createGridSprite(tilesImage, 20, 24, 3, 0)
         __testFloorSprite = Render.createGridSprite(tilesImage, 20, 24, 2, 0)
+        __playerSprite = Render.createGridSprite(heroImage, 4, 11, 0, 0)
 
         __wallSprites = [
             Render.createGridSprite(tilesImage, 20, 24, 0, 8),      // 0000
@@ -76,11 +79,30 @@ class Level {
                 }
             }
         }
+
+        for (y in 0...__height) {
+            for (x in 0...__width) {
+
+                var tileType = __gameplayGrid[x,y]
+
+                if (tileType == Type.player){
+
+                    var positionX = startX + x * __tileSize
+                    var positionY = startY + y * __tileSize
+                    //Applying offset sicne the players sprite is larger than the tiles
+                    positionX = positionX - __tileSize
+                    positionY = positionY - __tileSize
+
+                    Render.sprite(__playerSprite, positionX, positionY)
+                }
+            }
+        }
     }
 
     static width {__width}
     static height {__height}
     static levelGrid {__levelGrid}
+    static gameplayGrid {__gameplayGrid}
 
     static IsInBounds(x,y){
         
@@ -89,5 +111,6 @@ class Level {
             inBounds = false
         }
         return inBounds
+
     }
 }

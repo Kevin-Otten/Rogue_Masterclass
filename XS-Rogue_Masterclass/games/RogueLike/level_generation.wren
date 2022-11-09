@@ -7,7 +7,7 @@ import "types" for Directions, Type
 class WalkerGeneration {
 
     static Generate(){
-        __randomNumber = Random.new(423234234245334545534664534)
+        __randomNumber = Random.new()
         __direction = Directions.upIdx
         __stepsTaken = 0
         __stepLimit = 15
