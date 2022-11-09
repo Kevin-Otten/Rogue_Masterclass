@@ -1,7 +1,11 @@
 {
     "Always on top": {
         "type": "bool",
-        "value": true
+        "value": false
+    },
+    "Fullscreen": {
+        "type": "bool",
+        "value": false
     },
     "Height": {
         "type": "number",
@@ -11,9 +15,13 @@
         "type": "number",
         "value": 2.0
     },
+    "Perform second pass": {
+        "type": "bool",
+        "value": false
+    },
     "Title": {
         "type": "string",
-        "value": "Roguealot"
+        "value": "xs - hello"
     },
     "Width": {
         "type": "number",

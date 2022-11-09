@@ -1,4 +1,5 @@
 import "xs_math" for Vec2, Math
+import "xs" for Data
 import "level" for Level
 import "random" for Random
 import "types" for Directions, Type
@@ -6,14 +7,14 @@ import "types" for Directions, Type
 class WalkerGeneration {
 
     static Generate(){
-        __randomNumber = Random.new()
+        __randomNumber = Random.new(423234234245334545534664534)
         __direction = Directions.upIdx
         __stepsTaken = 0
         __stepLimit = 15
 
-        var amountOfWalkers = 15
+        var amountOfWalkers = 6
         var startPos = Vec2.new((Level.width / 2).floor, (Level.height / 2).floor)
-        System.print(startPos)
+
         for (i in 0..amountOfWalkers) {
             __stepsTaken = 0
             __position = startPos
@@ -21,6 +22,9 @@ class WalkerGeneration {
             walk()
         }
 
+        if (Data.getBool("Perform second pass", Data.debug)) {
+            PostProcesser.RemoveLonelyWalls(2)   
+        }
         PostProcesser.RemoveExcessWalls()
     }
 
@@ -92,7 +96,87 @@ class PostProcesser {
         }
     }
 
-    static RemoveLonelyWalls(){
+    static RemoveLonelyWalls(minimumNeighbours){
 
+        var toRemove = []
+
+        for (x in 0...Level.width) {
+            for (y in 0...Level.height) {
+                if (Level.levelGrid[x,y] == Type.wall) {
+                    
+                    var neighbourCount = 0
+
+                    //Check left, right, above and bellow
+                    if (Level.levelGrid.valid(x - 1, y)) {
+                        if (Level.levelGrid[x - 1, y] == Type.wall) {
+                            neighbourCount = neighbourCount + 1
+                        }
+                    }
+                    if (Level.levelGrid.valid(x + 1, y)){
+                        if (Level.levelGrid[x + 1, y] == Type.wall) {
+                            neighbourCount = neighbourCount + 1
+                        }
+                    }
+                    if (Level.levelGrid.valid(x, y - 1)){
+                        if (Level.levelGrid[x, y - 1] == Type.wall) {
+                            neighbourCount = neighbourCount + 1
+                        }
+                    }
+                    if (Level.levelGrid.valid(x, y + 1)){
+                        if (Level.levelGrid[x, y + 1] == Type.wall) {
+                            neighbourCount = neighbourCount + 1
+                        }
+                    }
+                    
+                    //If less neighbours than requested, change tile into floor
+                    if(neighbourCount < minimumNeighbours) {
+                        toRemove.add(Vec2.new(x, y))
+                    }
+                }
+            }
+        }
+
+        for (remove in toRemove) {
+            Level.levelGrid[remove.x, remove.y] = Type.floor
+        }
+
+        //Remove remaining single pillars
+        for (x in 0...Level.width) {
+            for (y in 0...Level.height) {
+                if (Level.levelGrid[x,y] == Type.wall) {
+                    
+                    var aNeighbour = false
+
+                    //Check left
+                    if (Level.levelGrid.valid(x - 1, y)) {
+                        if (Level.levelGrid[x - 1, y] == Type.wall) {
+                            aNeighbour = true
+                        }
+                    }
+                    //Check right
+                    if (Level.levelGrid.valid(x + 1, y)){
+                        if (Level.levelGrid[x + 1, y] == Type.wall) {
+                            aNeighbour = true
+                        }
+                    }
+                    //Check up
+                    if (Level.levelGrid.valid(x, y - 1)){
+                        if (Level.levelGrid[x, y - 1] == Type.wall) {
+                            aNeighbour = true
+                        }
+                    }
+                    //Check down
+                    if (Level.levelGrid.valid(x, y + 1)){
+                        if (Level.levelGrid[x, y + 1] == Type.wall) {
+                            aNeighbour = true
+                        }
+                    }
+
+                    if (aNeighbour == false){
+                        Level.levelGrid[x, y] = Type.floor
+                    }
+                }
+            }
+        }
     }
 }

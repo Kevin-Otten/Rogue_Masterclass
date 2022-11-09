@@ -1,6 +1,7 @@
 import "xs" for Render, Data
 import "level" for Level
 import "level_generation" for WalkerGeneration 
+import "gameplay" for GamePlay
 
 class Game {
 
@@ -14,13 +15,18 @@ class Game {
 
     static init() {        
         __time = 0
-        Level.Initialize()
-
+        //Setup level
+        Level.Init()
         WalkerGeneration.Generate()
+
+        //Setup gameplay elements (Player and enemies for example)
+        GamePlay.Init()
     }
 
     static update(dt) {
         __time = __time + dt
+
+        GamePlay.Update()
     }
     
     static render() {

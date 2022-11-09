@@ -6,7 +6,7 @@ import "game" for Game
 
 class Level {
 
-    static Initialize() {
+    static Init() {
 
         __tileSize = 16
         __width = 21
