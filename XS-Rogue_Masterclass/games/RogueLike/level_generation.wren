@@ -12,7 +12,7 @@ class WalkerGeneration {
         __stepsTaken = 0
         __stepLimit = 15
 
-        var amountOfWalkers = 6
+        var amountOfWalkers = 10
         var startPos = Vec2.new((Level.width / 2).floor, (Level.height / 2).floor)
 
         for (i in 0..amountOfWalkers) {

@@ -2,6 +2,7 @@ import "xs" for Input
 import "level" for Level
 import "types" for Type 
 import "xs_math" for Vec2 
+import "random" for Random
 
 class GamePlay {
     
@@ -17,13 +18,13 @@ class GamePlay {
             }
         }
 
+        __randomNumber = Random.new()
         __playerPosition = spawnPlayer()
-        spawnEnemies()
+        __enemyPositions = spawnEnemies()
     }
 
     static Update(){
         moveInput()
-        attackInput()
     }
 
     static spawnPlayer(){
@@ -33,6 +34,32 @@ class GamePlay {
 
     static spawnEnemies(){
 
+        __enemyAmount = 5
+        var amountSpawned = 0
+        var newEnemyPositions = List.filled(__enemyAmount, Type.empty)
+        var iter = 0
+        
+        while (amountSpawned != __enemyAmount) {
+            
+            var randomX = __randomNumber.int(0, Level.width)
+            var randomY = __randomNumber.int(0, Level.height)
+
+            if (Level.levelGrid[randomX,randomY] == Type.floor) {
+
+                var gridType = Level.gameplayGrid[randomX,randomY]
+
+                if (gridType != Type.player && gridType != Type.enemy) {
+
+                    Level.gameplayGrid[randomX,randomY] = Type.enemy
+                    newEnemyPositions.add(Vec2.new(randomX,randomY))
+                    amountSpawned = amountSpawned + 1
+                }
+            }
+
+            iter = iter + 1
+        }
+        System.print(iter)
+        return newEnemyPositions
     }
 
     static moveInput(){
@@ -59,29 +86,31 @@ class GamePlay {
 
         if(moved){
             if(Level.gameplayGrid.valid(newPosition.x, newPosition.y)){
-                if(checkIfTileWalkable(newPosition.x, newPosition.y)){
-                    Level.gameplayGrid[__playerPosition.x, __playerPosition.y] = Type.empty
-                    __playerPosition = newPosition
-                    Level.gameplayGrid[__playerPosition.x, __playerPosition.y] = Type.player
+                if(Level.gameplayGrid[newPosition.x, newPosition.y] != Type.enemy){
+                    if (Level.gameplayGrid[newPosition.x, newPosition.y] != Type.wall) {
+                        Level.gameplayGrid[__playerPosition.x, __playerPosition.y] = Type.empty
+                        __playerPosition = newPosition
+                        Level.gameplayGrid[__playerPosition.x, __playerPosition.y] = Type.player
+                    }
+                } else {
+                    attack(newPosition)
                 }
             }
         }
     }
 
-    static checkIfTileWalkable(x,y){
+    static attack(attackedPosition){
 
-        var canMoveHere = false
-
-        if(Level.gameplayGrid[x,y] != Type.wall && Level.gameplayGrid[x,y] != Type.enemy){
-            canMoveHere = true
+        Level.gameplayGrid[attackedPosition.x, attackedPosition.y] = Type.empty
+        for (i in 0...__enemyPositions.count) {
+            if (__enemyPositions[i] == attackedPosition) {
+                __enemyPositions.removeAt(i)
+                return
+            }
         }
-
-        return canMoveHere
     }
 
-    static attackInput(){
-        if (Input.getKeyOnce(Input.keySpace)) {
-            
-        }
+    static EnemyAction(){
+
     }
 }
