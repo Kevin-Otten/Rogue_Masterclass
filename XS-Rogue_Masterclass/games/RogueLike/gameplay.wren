@@ -36,8 +36,7 @@ class GamePlay {
 
         __enemyAmount = 5
         var amountSpawned = 0
-        var newEnemyPositions = List.filled(__enemyAmount, Type.empty)
-        var iter = 0
+        var newEnemyPositions = List.new()
         
         while (amountSpawned != __enemyAmount) {
             
@@ -55,10 +54,8 @@ class GamePlay {
                     amountSpawned = amountSpawned + 1
                 }
             }
-
-            iter = iter + 1
         }
-        System.print(iter)
+
         return newEnemyPositions
     }
 
@@ -96,6 +93,7 @@ class GamePlay {
                     attack(newPosition)
                 }
             }
+            enemyActions()
         }
     }
 
@@ -110,7 +108,52 @@ class GamePlay {
         }
     }
 
-    static EnemyAction(){
+    static enemyActions(){
+        
+        var newPosition = Vec2.new(0,0)
 
+        for (i in 0...__enemyPositions.count) {
+
+            newPosition = simpleAlignmentPathfinding(__enemyPositions[i])
+
+            if (Level.gameplayGrid[newPosition.x, newPosition.y] != Type.wall &&
+            Level.gameplayGrid[newPosition.x, newPosition.y] != Type.enemy) {
+
+                if (Level.gameplayGrid[newPosition.x, newPosition.y] != Type.player) {
+
+                    Level.gameplayGrid[__enemyPositions[i].x, __enemyPositions[i].y] = Type.empty
+                    Level.gameplayGrid[newPosition.x, newPosition.y] = Type.enemy
+                    __enemyPositions[i] = newPosition
+
+                } else {
+                    
+                }
+            }
+        }
+    }
+
+    static simpleAlignmentPathfinding(startPosition){
+        
+        var newPosition = startPosition
+        var direction = Vec2.new(0,0)
+        var plottedMove
+
+        var distanceX = __playerPosition.x - startPosition.x
+        var distanceY = __playerPosition.y - startPosition.y
+
+        if (distanceX.abs > distanceY.abs) {
+            direction.x = distanceX
+        } else {
+            direction.y = distanceY
+        }
+
+        System.print("X: %(distanceX.abs)")
+        System.print("Y: %(distanceY.abs)")
+        System.print("----------")
+
+        direction = direction.normalise
+        newPosition = newPosition + direction
+
+        return newPosition
     }
 }
