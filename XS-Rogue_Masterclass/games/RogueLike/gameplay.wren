@@ -1,4 +1,4 @@
-import "xs" for Input
+import "xs" for Input, Render
 import "level" for Level
 import "types" for Type 
 import "xs_math" for Vec2 
@@ -21,10 +21,24 @@ class GamePlay {
         __randomNumber = Random.new()
         __playerPosition = spawnPlayer()
         __enemyPositions = spawnEnemies()
+        __gameOver = false
+        __playerWon = false
     }
 
     static Update(){
-        moveInput()
+        if (__gameOver == false && __playerWon == false) {
+            moveInput()
+        }
+    }
+
+    static Render(){
+        if (__playerWon == true) {
+            Render.setColor(0x00ff00ff)
+            Render.shapeText("You won! :D", -300, 50, 10)
+        } else if (__gameOver == true){
+            Render.setColor(0xff0000ff)
+            Render.shapeText("You lost :(", -275, 50, 10)
+        }
     }
 
     static spawnPlayer(){
@@ -112,6 +126,10 @@ class GamePlay {
         
         var newPosition = Vec2.new(0,0)
 
+        if (__enemyPositions.count == 0) {
+            __playerWon = true
+        }
+
         for (i in 0...__enemyPositions.count) {
 
             newPosition = simpleAlignmentPathfinding(__enemyPositions[i])
@@ -126,7 +144,10 @@ class GamePlay {
                     __enemyPositions[i] = newPosition
 
                 } else {
-                    
+                    Level.gameplayGrid[__enemyPositions[i].x, __enemyPositions[i].y] = Type.empty
+                    Level.gameplayGrid[newPosition.x, newPosition.y] = Type.enemy
+                    gameOver()
+                    return
                 }
             }
         }
@@ -147,13 +168,14 @@ class GamePlay {
             direction.y = distanceY
         }
 
-        System.print("X: %(distanceX.abs)")
-        System.print("Y: %(distanceY.abs)")
-        System.print("----------")
-
         direction = direction.normalise
         newPosition = newPosition + direction
 
         return newPosition
+    }
+
+    static gameOver(){
+
+        __gameOver = true
     }
 }

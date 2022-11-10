@@ -31,5 +31,6 @@ class Game {
     
     static render() {
         Level.Render()
+        GamePlay.Render()
     }
 }
